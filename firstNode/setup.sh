@@ -22,6 +22,7 @@
 read -p "Please enter public IP of this host machine : " node_ip
 ips=("$node_ip")
 
+read -p "Enter Node Number (e.g. 4) : " node_number
 # Docker image name
 image=quorum
 
