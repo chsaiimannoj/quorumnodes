@@ -150,7 +150,6 @@ do
         | sed s/_RAFTID_/$node_number/g \
               > $qd/start-node.sh
 
-    cp start-node.sh $qd/start-node.sh
     chmod 755 $qd/start-node.sh
 
     let n++
