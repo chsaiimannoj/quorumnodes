@@ -136,6 +136,7 @@ do
     qd=qdata_$n
 
     cat tm.conf \
+        | sed s/_NODELIST_/$ip/g \
         | sed s/_NODEIP_/$ip/g \
               > $qd/tm.conf
 
