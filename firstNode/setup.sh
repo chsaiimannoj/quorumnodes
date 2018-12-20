@@ -86,13 +86,13 @@ echo "]" >> static-nodes.json
 #### Create accounts, keys and genesis.json file #######################
 
 echo '[3] Creating Ether accounts and genesis.json.'
-
+touch qdata_1/passwords.txt
 cat >> genesis.json <<EOF
 {
   "alloc": {
     "e722b5d8affd183b3b26983817a49f84223b39da": {
       "balance": "1000000000000000000000000000"
-    },
+    }
   },
   "coinbase": "0x0000000000000000000000000000000000000000",
   "config": {
@@ -162,7 +162,7 @@ do
 
     let n++
 done
-rm -rf genesis.json static-nodes.json
+rm -rf genesis.json static-nodes.json UTC--2018-12-17T14-13-25.726081617Z--e722b5d8affd183b3b26983817a49f84223b39da
 
 
 #### Create the docker-compose file ####################################
