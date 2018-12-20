@@ -62,6 +62,7 @@ done
 echo '[2] Creating Enodes and static-nodes.json.'
 
 echo "[" > static-nodes.json
+echo "[" > enode-url.json
 n=1
 for ip in ${ips[*]}
 do
@@ -73,16 +74,17 @@ do
     enode=`docker run -u $uid:$gid -v $pwd/$qd:/qdata $image /usr/local/bin/bootnode -nodekeyhex $key -writeaddress`
     # Add the enode to static-nodes.json
     sep=`[[ $n < $nnodes ]] && echo ","`
-    echo '  "enode://'$enode'@'$ip':21000?discport=0&raftport=50400"'$sep >> static-nodes.json
+    echo '  "enode://'$enode'@'$fn_ip':30303?discport=0&raftport=50400"'$sep >> static-nodes.json
 
     # Add the enode to enode-url.json
     sep=`[[ $n < $nnodes ]] && echo ","`
-    echo '  "enode://'$enode'@'$ip':21000?discport=0&raftport=50400"'$sep >> enode-url.json
+    echo '  "enode://'$enode'@'$ip':30303?discport=0&raftport=50400"'$sep >> enode-url.json
     echo '  [*] Login to geth console of any node of existing cluster & run the following command:'
-    echo '  raft.addPeer("enode://'$enode'@'$ip':21000?discport=0&raftport=50400")'
+    echo '  raft.addPeer("enode://'$enode'@'$ip':30303?discport=0&raftport=50400")'
 
     let n++
 done
+echo "]" >> enode-url.json
 echo "]" >> static-nodes.json
 
 
@@ -183,9 +185,8 @@ do
     ports:
       - 22000:22000
       - 9000:9000
-      - 21000:21000
+      - 21000:30303
       - 50400:50400
-    expose : [50400, 30303, 9000]
 EOF
 
     let n++
