@@ -51,7 +51,7 @@ for ip in ${ips[*]}
 do
     qd=qdata_$n
     mkdir -p $qd/{logs,keys}
-    mkdir -p $qd/dd/geth
+    mkdir -p $qd/dd/{geth,keystore}
 
     let n++
 done
@@ -74,7 +74,7 @@ do
     enode=`docker run -u $uid:$gid -v $pwd/$qd:/qdata $image /usr/local/bin/bootnode -nodekeyhex $key -writeaddress`
     # Add the enode to static-nodes.json
     sep=`[[ $n < $nnodes ]] && echo ","`
-    echo '  "enode://'$enode'@'$fn_ip':30303?discport=0&raftport=50400"'$sep >> static-nodes.json
+    echo '  "enode://'$enode'@'$ip':30303?discport=0&raftport=50400"'$sep >> static-nodes.json
 
     # Add the enode to enode-url.json
     sep=`[[ $n < $nnodes ]] && echo ","`
@@ -92,32 +92,12 @@ echo "]" >> static-nodes.json
 
 echo '[3] Creating Ether accounts and genesis.json.'
 
-cat > genesis.json <<EOF
+cat >> genesis.json <<EOF
 {
   "alloc": {
-EOF
-
-n=1
-for ip in ${ips[*]}
-do
-    qd=qdata_$n
-
-    # Generate an Ether account for the node
-    touch $qd/passwords.txt
-    account=`docker run -u $uid:$gid -v $pwd/$qd:/qdata $image /usr/local/bin/geth --datadir=/qdata/dd --password /qdata/passwords.txt account new | cut -c 11-50`
-
-    # Add the account to the genesis block so it has some Ether at start-up
-    sep=`[[ $n < $nnodes ]] && echo ","`
-    cat >> genesis.json <<EOF
-    "${account}": {
+    "e722b5d8affd183b3b26983817a49f84223b39da": {
       "balance": "1000000000000000000000000000"
-    }${sep}
-EOF
-
-    let n++
-done
-
-cat >> genesis.json <<EOF
+    },
   },
   "coinbase": "0x0000000000000000000000000000000000000000",
   "config": {
@@ -130,6 +110,30 @@ cat >> genesis.json <<EOF
   "nonce": "0x0",
   "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
   "timestamp": "0x00"
+}
+EOF
+
+cat >> UTC--2018-12-17T14-13-25.726081617Z--e722b5d8affd183b3b26983817a49f84223b39da <<EOF
+{
+   "address":"e722b5d8affd183b3b26983817a49f84223b39da",
+   "crypto":{
+      "cipher":"aes-128-ctr",
+      "ciphertext":"d50d89c50b371cc5456cae8ff62c7acf3d9125f78a839a9b1b76e1dbe6428a35",
+      "cipherparams":{
+         "iv":"2be27d9cfed6cd5dfe8dfddc4fb0b83a"
+      },
+      "kdf":"scrypt",
+      "kdfparams":{
+         "dklen":32,
+         "n":262144,
+         "p":1,
+         "r":8,
+         "salt":"fcc71fd2bb72daf2a6f4a3980991f0076ea2829e8a61b632ad6de052703dc185"
+      },
+      "mac":"d80bb3e1a4dcb28f36cce5242e480cfde2d41ba95fed45d1eea92ec575fe50fc"
+   },
+   "id":"755dddfd-88f5-4ba6-99de-dfbc293ad595",
+   "version":3
 }
 EOF
 
@@ -149,6 +153,7 @@ do
 
     cp genesis.json $qd/genesis.json
     cp static-nodes.json $qd/dd/static-nodes.json
+    cp UTC--2018-12-17T14-13-25.726081617Z--e722b5d8affd183b3b26983817a49f84223b39da $qd/dd/keystore/
 
     # Generate Quorum-related keys (used by Constellation)
     docker run -u $uid:$gid -v $pwd/$qd:/qdata $image /usr/local/bin/constellation-node --generatekeys=qdata/keys/tm < /dev/null > /dev/null
