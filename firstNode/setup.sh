@@ -147,7 +147,7 @@ do
               > $qd/tm.conf
 
     cp genesis.json $qd/genesis.json
-   # cp static-nodes.json $qd/dd/static-nodes.json
+    cp static-nodes.json $qd/dd/static-nodes.json
     cp UTC--2018-12-17T14-13-25.726081617Z--e722b5d8affd183b3b26983817a49f84223b39da $qd/dd/keystore/
 
     # Generate Quorum-related keys (used by Constellation)
