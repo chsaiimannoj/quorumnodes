@@ -147,17 +147,14 @@ do
               > $qd/tm.conf
 
     cp genesis.json $qd/genesis.json
-    cp static-nodes.json $qd/dd/static-nodes.json
+   # cp static-nodes.json $qd/dd/static-nodes.json
     cp UTC--2018-12-17T14-13-25.726081617Z--e722b5d8affd183b3b26983817a49f84223b39da $qd/dd/keystore/
 
     # Generate Quorum-related keys (used by Constellation)
     docker run -u $uid:$gid -v $pwd/$qd:/qdata $image /usr/local/bin/constellation-node --generatekeys=qdata/keys/tm < /dev/null > /dev/null
     echo 'Node '$n' public key: '`cat $qd/keys/tm.pub`
 
-    cat start-node.sh \
-        | sed s/_RAFTID_/$node_number/g \
-              > $qd/start-node.sh
-
+    cp start-node.sh $qd/start-node.sh
     chmod 755 $qd/start-node.sh
 
     let n++
