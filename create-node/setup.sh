@@ -21,7 +21,7 @@
 #### Configuration options #############################################
 read -p "Enter Node Number (e.g. 4) : " node_nbr
 node_number=("$node_nbr")
-if [ $node_number -ne 1 ]; then
+if [ $node_number -ne "1" ]; then
     read -p "Please enter first node public ip : " first_node_ip
     fn_ip=("$first_node_ip")
 fi
@@ -144,7 +144,7 @@ n=1
 for ip in ${ips[*]}
 do
     qd=qdata_$n
-    if [ $node_number -e 1 ]; then
+    if [ $node_number == "1" ]; then
        nlip=$ip
     else
        nlip=$fn_ip
@@ -156,19 +156,19 @@ do
 
     cp genesis.json $qd/genesis.json
     cp UTC--2018-12-17T14-13-25.726081617Z--e722b5d8affd183b3b26983817a49f84223b39da $qd/dd/keystore/
-    if [ $node_number -e 1 ]; then
+    if [ $node_number == "1" ]; then
        cp static-nodes.json $qd/dd/static-nodes.json
     fi
     # Generate Quorum-related keys (used by Constellation)
     docker run -u $uid:$gid -v $pwd/$qd:/qdata $image /usr/local/bin/constellation-node --generatekeys=qdata/keys/tm < /dev/null > /dev/null
     echo 'Node '$n' public key: '`cat $qd/keys/tm.pub`
-    if [ $node_number -e 1 ]; then
+    if [ $node_number == "1" ]; then
        cat start-node.sh \
        | sed s/" _RAFTINDEX_"//g \
              > $qd/start-node.sh
     else
        cat start-node.sh \
-        | sed s/_RAFTINDEX_/"--raftjoinexisting _RAFTID_"/g
+        | sed s/_RAFTINDEX_/"--raftjoinexisting _RAFTID_"/g \
         | sed s/_RAFTID_/$node_number/g \
               > $qd/start-node.sh
     fi
