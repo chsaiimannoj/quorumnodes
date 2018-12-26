@@ -194,7 +194,7 @@ do
   node_$n:
     image: $image
     volumes:
-      - './$qd:/qdata'
+      - '/qdata:/qdata'
     ports:
       - 22000:8545
       - 9000:9000
